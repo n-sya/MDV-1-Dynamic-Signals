@@ -1,0 +1,79 @@
+import numpy as np
+import matplotlib.pyplot as pl
+
+fs = 1000      # sampling frequency (Hz)
+T = 2          # total time (seconds)
+N = fs * T     # to not violate nyquist frequency
+
+t = np.linspace(0, T, N, endpoint=False)
+
+y = np.sin(2*np.pi*20*t) + np.sin(2*np.pi*25*t)
+x = np.sin(2*np.pi*20*t) + np.sin(2*np.pi*30*t)
+
+# FFT
+Y = np.fft.fft(y)
+
+# Create Hilbert multiplier
+H = np.zeros(N)
+H[0] = 1
+H[1:N//2] = 2
+H[N//2] = 1
+
+# Apply
+analytic_signal = np.fft.ifft(Y * H)
+
+envelope = np.abs(analytic_signal)
+
+pl.xlabel("Time")
+pl.ylabel("y signal")
+pl.plot(t, envelope, 'r', linewidth=2, label="Envelope")
+pl.grid()
+pl.plot(t, y, label="Signal")
+pl.show()
+
+# Frequency axis
+freq_y = np.fft.fftfreq(N, 1/fs)
+
+# Keep only positive frequencies
+half = N // 2
+freq_pos = freq_y[:half]
+Y_pos = np.abs(Y[:half])
+
+# Find two largest peaks
+indices = np.argsort(Y_pos)[-2:]
+
+f1_y, f2_y = freq_pos[indices]
+
+print("Y signal frequencies:", f1_y, "Hz and", f2_y, "Hz")
+print("Y beat frequency:", abs(f2_y - f1_y), "Hz")
+
+# FFT
+X = np.fft.fft(x)
+
+# Create Hilbert multiplier
+H = np.zeros(N)
+H[0] = 1
+H[1:N//2] = 2
+H[N//2] = 1
+
+# Apply
+analytic_signal2 = np.fft.ifft(X * H)
+
+envelope2 = np.abs(analytic_signal2)
+
+pl.xlabel("Time")
+pl.ylabel("x signal")
+pl.plot(t, envelope2, 'r', linewidth=2, label="Envelope")
+pl.grid()
+pl.plot(t, x, label="Signal")
+pl.show()
+
+freq_x = np.fft.fftfreq(N, 1/fs)
+X_pos = np.abs(X[:half])
+
+indices = np.argsort(X_pos)[-2:]
+
+f1_x, f2_x = freq_pos[indices]
+
+print("X signal frequencies:", f1_x, "Hz and", f2_x, "Hz")
+print("X beat frequency:", abs(f2_x - f1_x), "Hz")
