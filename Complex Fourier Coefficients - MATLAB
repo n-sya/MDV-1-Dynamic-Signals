@@ -1,0 +1,32 @@
+% Pure tone sine signal
+% Using Hz
+
+A = 1;  % Pure tone signal amplitude
+f = 50; % Pure tone signal frequency
+N = 4096;
+fs = 1000;
+t  = (0:N-1)/fs; 
+
+
+% FFT frequencies are spaced at: df =  sampling frequency / number of samples taken
+% Each bin in the FFT is represented by: FFT Bin, fk = Number of FFT bins,k * FFT frequency spacing,df
+% where k = 1,2,3,...N-1
+
+k = round(f * N / fs);
+
+phases = [0, pi/8, pi/4, 3*pi/8, pi/2];
+
+for phi = phases
+    x = A*sin(2*pi*f*t + phi);
+
+    % FFT
+    X = fft(x);
+
+    ak =  (2/N) * real(X(k+1));
+    bk = -(2/N) * imag(X(k+1));
+
+    ak_exp = A*sin(phi);
+    bk_exp = A*cos(phi);
+
+    fprintf('ak_exp = %.6f | bk_exp = %.6f\n', ak_exp, bk_exp);
+end
