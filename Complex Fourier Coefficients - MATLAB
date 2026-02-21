@@ -30,3 +30,5 @@ for phi = phases
 
     fprintf('ak_exp = %.6f | bk_exp = %.6f\n', ak_exp, bk_exp);
 end
+
+% results show that as the phase delay approaches phi/2, the pure sine wave approches a pure cosine wave as seen with the increase in the ak coefficient values (for cosine waves) and decrease in bk coefficient values (for sine waves)
